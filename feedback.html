@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Feedback - AnimeCode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <header>
+        <h1>User Feedback</h1>
+    </header>
+
+    <div class="form-container">
+        <form id="feedbackForm" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="5090b1c2-3907-439b-8f67-e571ea223577">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="@gmail.com" required>
+            <label for="feedback">Feedback:</label>
+            <textarea id="feedback" rows="4" name="feedback" placeholder="Type your feedback here..." required></textarea>
+            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>© 2024 AnimeCode. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function handleFeedback(event) {
+            event.preventDefault(); // Prevent form submission
+            alert('Thank you for your feedback!'); // Simulate feedback submission
+            window.location.href = 'index.html'; // Redirect to home
+        }
+    </script>
+</body>
+</html>

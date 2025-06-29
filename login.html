@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AnimeCode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        .error { background-color: #ffebee; color: #c62828; }
+        .success { background-color: #e8f5e9; color: #2e7d32; }
+    </style>
+
+    <script type="module">
+        // Import necessary Firebase SDK functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxL_WIsyrhibB5LYs26qt_T7bdpuX9n2Y",
+            authDomain: "animcode-bf9fc.firebaseapp.com",
+            projectId: "animcode-bf9fc",
+            storageBucket: "animcode-bf9fc.appspot.com",
+            messagingSenderId: "971557903143",
+            appId: "1:971557903143:web:c752d239f5bcb0ab2fa702",
+            measurementId: "G-DQ3W1NZ0X9"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Function to display messages
+        function showMessage(message, isError = false) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = message;
+            messageElement.className = `message ${isError ? 'error' : 'success'}`;
+            messageElement.style.display = 'block';
+        }
+
+        // Handle Login
+        window.handleLogin = async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const email = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                if (!user.emailVerified) {
+                    showMessage('Please verify your email before logging in.', true);
+                    await auth.signOut();
+                    return;
+                }
+
+                showMessage('Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Login error:', error);
+                let errorMessage = 'An error occurred during login. Please try again.';
+                
+                switch(error.code) {
+                    case 'auth/invalid-credential':
+                        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage = 'No user found with this email. Please check your email or sign up.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Incorrect password. Please try again.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email format. Please enter a valid email.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'This account has been disabled. Please contact support.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed login attempts. Please try again later or reset your password.';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Network error. Please check your internet connection and try again.';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'Login is currently disabled. Please contact support.';
+                        break;
+                    default:
+                        errorMessage = `An unexpected error occurred: ${error.message}`;
+                        break;
+                }
+                showMessage(errorMessage, true);
+            }
+        }
+
+        // Toggle password visibility
+        window.togglePassword = function() {
+            const passwordField = document.getElementById("password");
+            const toggleButton = document.querySelector(".toggle-password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleButton.textContent = "🙈"; // Hide icon
+            } else {
+                passwordField.type = "password";
+                toggleButton.textContent = "👁️"; // Show icon
+            }
+        }
+
+        // Handle password reset
+        window.handlePasswordReset = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('username').value;
+            if (!email) {
+                showMessage('Please enter your email to reset your password.', true);
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showMessage('Password reset email sent! Please check your inbox.', false);
+            } catch (error) {
+                console.error('Password reset error:', error);
+                showMessage('Error sending password reset email. Please try again later.', true);
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Login to AnimeCode</h1>
+    </header>
+
+    <div class="form-container">
+        <div id="message" class="message"></div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <label for="username">Email:</label>
+            <input type="email" id="username" placeholder="your-email@example.com" required>
+            
+            <label for="password">Password:</label>
+            <div class="password-container">
+                <input type="password" id="password" placeholder="********" required>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+        <p><a href="#" onclick="handlePasswordReset(event)">Forgot your password?</a></p>
+    </div>
+</body>
+</html>

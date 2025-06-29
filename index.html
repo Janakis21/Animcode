@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeCode - Algorithm Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Ensure this points to your CSS file -->
+    <script src="scripts.js" defer></script>  <!-- Main script file -->
+    <script src="p5Animations.js" defer></script> <!-- Animation file -->
+    <script src="algorithms/searching.js" defer></script>
+    <script src="algorithms/sortingAlgorithms.js" defer></script>
+    <script src="algorithms/graphAlgorithms.js" defer></script>
+    <script src="algorithms/dynamicProgramming.js" defer></script>
+    <script src="algorithms/mathematical.js" defer></script>
+    <script src="algorithms/stringAlgorithms.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to AnimeCode</h1>
+        <p>Your go-to platform for learning algorithms!</p>
+        <button id="themeToggle" class="theme-button">Toggle Dark Mode</button> <!-- Button for Theme Toggle -->
+    </header>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="signup.html">Sign Up</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="feedback.html">Feedback</a></li>
+        </ul>
+    </nav>
+
+    <!-- Card Container -->
+    <div class="card-container">
+        <div class="card" onclick="showPrograms('searching')">
+            <img src="images/searching.JPEG" alt="Searching Algorithms" class="card-image">
+            <p>Searching Algorithms</p>
+        </div>
+        <div class="card" onclick="showPrograms('sorting')">
+            <img src="images/sorting.JPEG" alt="Sorting Algorithms" class="card-image">
+            <p>Sorting Algorithms</p>
+        </div>
+        <div class="card" onclick="showPrograms('graph')">
+            <img src="images/graph.png" alt="Graph Algorithms" class="card-image">
+            <p>Graph Algorithms</p>
+        </div>
+<br>
+        <div class="card" onclick="showPrograms('dynamic')">
+            <img src="images/dyno.png" alt="Dynamic Programming" class="card-image">
+            <p>Dynamic Programming</p>
+        </div>
+        <div class="card" onclick="showPrograms('mathematical')">
+            <img src="images/math.png" alt="Mathematical Algorithms" class="card-image">
+            <p>Mathematical Algorithms</p>
+        </div>
+        <div class="card" onclick="showPrograms('strings')">
+            <img src="images/str-rev.png" alt="String Algorithms" class="card-image">
+            <p>String Algorithms</p>
+        </div>
+    </div>
+
+    <!-- Container to display the code -->
+    <div id="codeContainer" class="code-container" style="display:none;">
+        <h2 id="programTitle"></h2>
+        <pre id="codeOutput" class="code-block"></pre>
+    </div>
+
+    <!-- Video Suggestions Section -->
+    <div id="videoSuggestions" class="video-suggestions" style="display:none;">
+        <h2>Recommended Videos</h2>
+        <div id="videosList"></div> <!-- YouTube videos will be inserted here -->
+    </div>
+
+    <footer>
+        <p>© 2024 AnimeCode. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        let isDarkMode = false;
+
+        themeToggle.onclick = function() {
+            document.body.classList.toggle('dark-mode');
+            isDarkMode = !isDarkMode;
+            themeToggle.textContent = isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        };
+
+        // YouTube API Key
+        const YOUTUBE_API_KEY = 'AIzaSyCqyiM46XirWCjF_Sfc1SEIZZCZAXW_bKk'; // Replace with your actual API key
+
+        // Function to show program options based on category
+        function showPrograms(category) {
+            let algorithms = {};
+            let programNames = [];
+
+            // Fetch algorithm data based on the selected category
+            switch (category) {
+                case 'searching':
+                    algorithms = searchingAlgorithms;
+                    break;
+                case 'sorting':
+                    algorithms = sortingAlgorithms;
+                    break;
+                case 'graph':
+                    algorithms = graphAlgorithms;
+                    break;
+                case 'dynamic':
+                    algorithms = dynamicProgramming;
+                    break;
+                case 'mathematical':
+                    algorithms = mathematicalAlgorithms;
+                    break;
+                case 'strings':
+                    algorithms = stringAlgorithms;
+                    break;
+            }
+
+            // Gather program names
+            programNames = Object.keys(algorithms);
+
+            // Prompt for program selection
+            const program = prompt("Available Programs:\n" + programNames.join("\n") + "\n\nEnter the program name:");
+            if (program && algorithms[program]) {
+                const languages = Object.keys(algorithms[program]);
+                const language = prompt("Available Languages:\n" + languages.join("\n") + "\n\nEnter the language name:");
+                if (language && algorithms[program][language]) {
+                    displayCode(program, language, algorithms[program][language]);
+                    fetchYouTubeVideos(program);
+                } else {
+                    alert("Language not found!");
+                }
+            } else {
+                alert("Program not found!");
+            }
+        }
+
+        // Function to display the selected algorithm's code
+        function displayCode(program, language, code) {
+            document.getElementById('programTitle').innerText = `${program} in ${language}`;
+            document.getElementById('codeOutput').innerText = code;
+            document.getElementById('codeContainer').style.display = 'block';
+        }
+
+        // Fetch YouTube videos based on algorithm name
+        function fetchYouTubeVideos(algorithm) {
+            const videosList = document.getElementById('videosList');
+            videosList.innerHTML = ''; // Clear existing videos
+
+            const query = `${algorithm} algorithm tutorial`;
+            const youtubeAPI = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${AIzaSyCqyiM46XirWCjF_Sfc1SEIZZCZAXW_bKk}&maxResults=5`;
+
+            fetch(youtubeAPI)
+                .then(response => response.json())
+                .then(data => {
+                    data.items.forEach(item => {
+                        const videoId = item.id.videoId;
+                        const videoTitle = item.snippet.title;
+                        const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                        const videoThumbnail = item.snippet.thumbnails.default.url;
+
+                        // Create video element
+                        const videoElement = document.createElement('div');
+                        videoElement.classList.add('video-item');
+                        videoElement.innerHTML = `
+                            <a href="${videoUrl}" target="_blank">
+                                <img src="${videoThumbnail}" alt="${videoTitle}">
+                                <p>${videoTitle}</p>
+                            </a>
+                        `;
+                        videosList.appendChild(videoElement);
+                    });
+
+                    // Show the video suggestions section
+                    document.getElementById('videoSuggestions').style.display = 'block';
+                })
+                .catch(error => console.error('Error fetching YouTube videos:', error));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - AnimeCode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxL_WIsyrhibB5LYs26qt_T7bdpuX9n2Y",
+            authDomain: "animcode-bf9fc.firebaseapp.com",
+            projectId: "animcode-bf9fc",
+            storageBucket: "animcode-bf9fc.appspot.com",
+            messagingSenderId: "971557903143",
+            appId: "1:971557903143:web:c752d239f5bcb0ab2fa702",
+            measurementId: "G-DQ3W1NZ0X9"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Handle the Signup Process
+        window.handleSignup = function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const email = document.getElementById("newUsername").value;
+            const password = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            // Firebase authentication: sign up with email and password
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Send email verification
+                    sendEmailVerification(userCredential.user)
+                        .then(() => {
+                            // Email verification sent
+                            alert('Signup successful! Please check your email for verification.');
+                            window.location.href = 'login.html'; // Redirect to login page
+                        });
+                })
+                .catch((error) => {
+                    const errorMessage = error.message;
+                    alert(`Error: ${errorMessage}`);
+                });
+        }
+
+        // Toggle password visibility
+        window.togglePassword = function(fieldId) {
+            const field = document.getElementById(fieldId);
+            const fieldType = field.type === "password" ? "text" : "password";
+            field.type = fieldType;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Sign Up for AnimeCode</h1>
+    </header>
+
+    <div class="form-container">
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <label for="newUsername">Username:</label>
+            <input type="email" id="newUsername" placeholder="your-email@gmail.com" required>
+            
+            <label for="newPassword">Password:</label>
+            <div class="password-container">
+                <input type="password" id="newPassword" placeholder="********" required>
+                <span class="toggle-password" onclick="togglePassword('newPassword')">👁️</span>
+            </div>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <div class="password-container">
+                <input type="password" id="confirmPassword" placeholder="********" required>
+                <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁️</span>
+            </div>
+
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+</body>
+</html>

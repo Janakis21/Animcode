@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Code Output</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <header>
+        <h1>Algorithm Code Output</h1>
+    </header>
+
+    <div class="output-container">
+        <!-- Left Section: Algorithm Code and Image -->
+        <div class="left-section">
+            <h2 id="algorithmTitle"></h2>
+            <pre id="algorithmCode" class="code-block"></pre>
+
+            <!-- Image Section -->
+            <div class="algorithm-image">
+                <img id="algorithmImage" src="" alt="Algorithm Illustration" />
+            </div>
+        </div>
+
+        <!-- Right Section: Video Suggestions Section -->
+        <div id="videoSuggestions" class="right-section">
+            <h2>Recommended Videos</h2>
+            <div id="videosList"></div> <!-- YouTube videos will be embedded here -->
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 AnimeCode. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const YOUTUBE_API_KEY = 'AIzaSyCqyiM46XirWCjF_Sfc1SEIZZCZAXW_bKk'; // Replace with your YouTube API key
+
+        // Retrieve data from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const algorithm = urlParams.get('algorithm');
+        const language = urlParams.get('language');
+        const code = urlParams.get('code');
+
+        // Display the algorithm title and code
+        document.getElementById('algorithmTitle').textContent = `${algorithm} in ${language}`;
+        document.getElementById('algorithmCode').textContent = decodeURIComponent(code);
+
+        // Dynamically load an image based on the selected algorithm
+        const imageElement = document.getElementById('algorithmImage');
+        switch (algorithm.toLowerCase()) {
+            case 'binary search':
+                imageElement.src = 'images/binary-search.png';
+                break;
+            case 'linear search':
+                imageElement.src = 'images/linear-search.png';
+                break;
+            case 'quick sort':
+                imageElement.src = 'images/quick-sort.png';
+                break;
+            case 'bubble sort':
+                imageElement.src = 'images/bubble-sort.jpeg';
+                break;
+            case 'insertion sort':
+                imageElement.src = 'images/insertion-sort.png';
+                break;
+            case 'selection sort':
+                imageElement.src = 'images/selection-short.png';
+                break;
+            case 'bfs':
+                imageElement.src = 'images/bfs.png';
+                break;
+            case 'dfs':
+                imageElement.src = 'images/dfs.png';
+                break;
+            case 'dijkstra':
+                imageElement.src = 'images/dijkstra.png';
+                break;
+            case 'fibonacci sequence':
+                imageElement.src = 'images/fibo.png';
+                break;
+            case 'knapsack problem':
+                imageElement.src = 'images/knap.png';
+                break;
+            case 'longest common subsequence':
+                imageElement.src = 'images/lcs.png';
+                break;
+            case 'gcd':
+                imageElement.src = 'images/GCD.png';
+                break;
+            case 'factorial':
+                imageElement.src = 'images/fact.png';
+                break;
+            case 'prime':
+                imageElement.src = 'images/prime.png';
+                break;
+            case 'palindrome check':
+                imageElement.src = 'images/pali.png';
+                break;
+            case 'anagram check':
+                imageElement.src = 'images/anag.png';
+                break;
+            case 'string reversal':
+                imageElement.src = 'images/str-rev.png';
+                break;
+            default:
+                imageElement.src = 'images/bubble-search.png';
+                break;
+        }
+
+        // Fetch YouTube videos based on the algorithm name and embed them
+        function fetchYouTubeVideos(algorithm) {
+            const videosList = document.getElementById('videosList');
+            videosList.innerHTML = ''; // Clear existing videos
+
+            const query = `${algorithm} algorithm tutorial`;
+            const youtubeAPI = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${YOUTUBE_API_KEY}&maxResults=3`;
+
+            fetch(youtubeAPI)
+                .then(response => response.json())
+                .then(data => {
+                    data.items.forEach(item => {
+                        const videoId = item.id.videoId;
+                        const videoTitle = item.snippet.title;
+                        const videoUrl = `https://www.youtube.com/embed/${videoId}`;
+
+                        // Create iframe to embed the video
+                        const videoElement = document.createElement('iframe');
+                        videoElement.width = "100%";
+                        videoElement.height = "315";
+                        videoElement.src = videoUrl;
+                        videoElement.title = videoTitle;
+                        videoElement.frameBorder = "0";
+                        videoElement.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                        videoElement.allowFullscreen = true;
+
+                        videosList.appendChild(videoElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching YouTube videos:', error));
+        }
+
+        // Call fetchYouTubeVideos function to fetch and embed videos related to the algorithm
+        fetchYouTubeVideos(algorithm);
+    </script>
+</body>
+</html>
